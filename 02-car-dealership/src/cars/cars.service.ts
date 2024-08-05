@@ -1,21 +1,24 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, NotFoundException, Delete } from '@nestjs/common';
+import { Car } from './interfaces/car.interface';
+import { v4 as uuid } from 'uuid'
+import { CreateCarDto, UpdateCarDto } from './dto';
 
 @Injectable()
 export class CarsService {
-    private cars = [
+    private cars: Car[] = [
         {
-            id:1, 
-            brand:'Toyota', 
-            model:'Cororlla'
+            id: uuid(), 
+            brand: 'Toyota', 
+            model: 'Cororlla'
         }, 
         {
-            id:2,
-            brand:'Honda',
-            model:'Civic'
+            id: uuid(),
+            brand: 'Honda',
+            model: 'Civic'
         }, 
         {
-            id:3, 
-            brand:'Jeep',
+            id: uuid(), 
+            brand: 'Jeep',
             model: 'Cherokee'
         }
     ]
@@ -24,14 +27,40 @@ export class CarsService {
         return this.cars
     }
 
-    findOneByID(id:number){
-        if(!(id<0)){
-            const car = this.cars.find((car) => car.id === id)
-            if(car) return car
-            else throw new NotFoundException(`Car with ID '${id}' not found `)
-        }
-        
-        //return {msg:'Car id was not found!'}
+    findOneByID(id:string){
+        const car = this.cars.find((car) => car.id === id)
+        if(car) return car
+        else throw new NotFoundException(`Car with ID '${id}' not found `)
     }
 
+    create(createCarDto: CreateCarDto){
+        const car: Car = {
+            id: uuid(),
+            ...createCarDto
+        }
+        this.cars.push(car)
+        return car
+    }
+
+    update(id: string, updateCarDto: UpdateCarDto){
+        let carDB = this.findOneByID(id)
+        this.cars = this.cars.map( car => {
+            if ( car.id === id ){
+                carDB = {...carDB,...updateCarDto,id}
+                return carDB
+            }
+            return car
+        })
+
+        return carDB;
+    }
+
+    delete(id:string){
+        const carDB = this.findOneByID(id)
+        if (carDB){
+            this.cars = this.cars.filter(car => id !== car.id)
+            return carDB
+        }
+        throw new NotFoundException()
+    }
 }
