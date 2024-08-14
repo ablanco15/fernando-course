@@ -20,7 +20,15 @@ npm i -@nestjs/cli
 docker-compose up -d
 ```
 
-5. Rebuild Databasewith seed
+5. clone file __.env.template__, and rename the copy to __.env__
+
+6. Fill environment variables defined at __.env__
+
+7. Execute app en dev mode 
+```
+yarn run start:dev
+```
+8. Rebuild Databasewith seed
 
 ```
 http:localhost:3000/api/v2/seed
